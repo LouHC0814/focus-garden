@@ -1,0 +1,8 @@
+{
+  "name": "focus-garden",
+  "version": "0.1.0",
+  "private": true,
+  "description": "把小任务种成像素花园：本地待办、专注计时与备份。",
+  "scripts": { "start": "node scripts/serve.cjs", "test": "node --test tests/core.test.cjs" },
+  "engines": { "node": ">=20" }
+}
