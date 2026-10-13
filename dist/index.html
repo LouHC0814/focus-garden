@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f5ec">
+  <meta name="description" content="把任务种成一座像素花园。完成小事让植物开花，配合专注计时与本地备份。">
+  <title>像素专注花园 · 小事也会开花</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="core.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#tasks">跳到任务列表</a>
+  <header class="topbar wrap">
+    <a class="brand" href="./" aria-label="像素专注花园首页"><img src="favicon.svg" width="34" height="34" alt=""><span>专注花园<small>FOCUS GARDEN</small></span></a>
+    <div class="top-actions"><span class="local-badge"><i></i>本地保存</span><button class="quiet" id="import-button" type="button">导入备份</button><button class="quiet" id="export-button" type="button">导出备份 <span aria-hidden="true">↗</span></button></div>
+    <input type="file" id="import-file" accept="application/json,.json" hidden>
+  </header>
+  <main class="wrap">
+    <section class="intro" aria-labelledby="page-title">
+      <div><p class="eyebrow">一件小事，一朵花</p><h1 id="page-title">今天，种点小进步<span>。</span></h1><p class="subtitle">把想做的事种下来，慢慢完成，让日子长出一点好看的东西。</p></div>
+      <div class="date-note"><span class="date-flower" aria-hidden="true">✿</span><div><span id="today-label"></span><small>不用着急，按自己的节奏来。</small></div></div>
+    </section>
+    <section class="metrics" aria-label="花园统计">
+      <div><span class="metric-icon" aria-hidden="true">✿</span><span class="metric-number" id="metric-today">0</span><span>今天完成</span></div>
+      <div><span class="metric-icon leaf" aria-hidden="true">♧</span><span class="metric-number" id="metric-pending">0</span><span>等待发芽的小事</span></div>
+      <div><span class="metric-icon clock" aria-hidden="true">◷</span><span class="metric-number" id="metric-minutes">0</span><span>累计专注分钟</span></div>
+    </section>
+    <div class="workspace">
+      <div class="garden-column">
+        <section class="card garden-card" aria-labelledby="garden-title">
+          <div class="card-heading"><div><span class="section-tag">YOUR LITTLE GARDEN</span><h2 id="garden-title">我的小花园</h2></div><button id="sky-button" class="sky-button" type="button" aria-pressed="false">☾ 切换夜景</button></div>
+          <div class="canvas-frame"><canvas id="garden" width="320" height="166" role="img" aria-label="像素花园：还没有种下任务"></canvas><span class="garden-sign">慢慢来，也会开花</span></div>
+          <div class="garden-footer"><span><i class="legend-sprout"></i>待办是嫩芽 <i class="legend-flower"></i>完成会开花</span><span id="garden-count">等待第一颗种子</span></div>
+        </section>
+        <section class="card tasks-card" id="tasks" aria-labelledby="task-title">
+          <div class="card-heading"><div><span class="section-tag">ONE THING AT A TIME</span><h2 id="task-title">种下一件小事</h2></div><span class="task-count" id="task-count">0 项任务</span></div>
+          <form id="task-form" class="task-form"><label class="sr-only" for="task-input">新任务名称</label><input id="task-input" name="title" type="text" maxlength="80" placeholder="比如：背 10 个单词、读两页书……" autocomplete="off" required><button class="primary" type="submit">种下 <span aria-hidden="true">＋</span></button></form>
+          <div class="suggestions"><span>从小事开始</span><button type="button" data-suggestion="背 10 个单词">背 10 个单词</button><button type="button" data-suggestion="做一道概率题">做一道概率题</button><button type="button" data-suggestion="整理一下桌面">整理一下桌面</button></div>
+          <div class="task-filters" role="group" aria-label="筛选任务"><button type="button" data-filter="all" class="active" aria-pressed="true">全部</button><button type="button" data-filter="pending" aria-pressed="false">待完成</button><button type="button" data-filter="done" aria-pressed="false">已开花</button></div>
+          <ul class="task-list" id="task-list"></ul>
+          <div class="empty-state" id="empty-state"><span aria-hidden="true">🌱</span><p>花园在等你的第一件小事。</p><small>不用很大，能开始就很好。</small></div>
+        </section>
+      </div>
+      <aside class="side-column">
+        <section class="card focus-card" aria-labelledby="focus-title">
+          <span class="section-tag">A MOMENT FOR YOURSELF</span><h2 id="focus-title">给自己一段专注</h2><p class="focus-description">先做眼前这一件，其他的等一会儿。</p>
+          <div class="timer-ring" id="timer-ring"><div class="timer-inner"><span class="timer-label" id="timer-label">准备好就开始</span><strong id="timer" aria-label="剩余时间">25:00</strong><span class="timer-footnote">一次，只做一件事</span></div></div>
+          <div class="duration-row"><label for="duration">专注时长</label><select id="duration"><option value="15">15 分钟</option><option value="25" selected>25 分钟</option><option value="45">45 分钟</option><option value="custom">自定义</option></select></div>
+          <div class="custom-duration" id="custom-duration" hidden><label for="custom-minutes">分钟数</label><input id="custom-minutes" type="number" min="1" max="180" value="25"><button id="apply-duration" class="quiet" type="button">应用</button></div>
+          <button id="focus-button" class="primary focus-button" type="button"><span aria-hidden="true">▶</span> 开始专注</button><button id="reset-button" class="reset-button" type="button" disabled>重置这一轮</button>
+          <p class="focus-tip" id="focus-tip">完成一轮后，会自动记下专注分钟。</p>
+        </section>
+        <section class="note-card"><span class="note-flower" aria-hidden="true">✿</span><h3>小事也值得被看见。</h3><p>任务完成时，花园就会多一朵花。<br>哪怕今天只做了一件，<br>也是属于你的进步。</p><span class="note-signature">—— 写给慢慢努力的你</span></section>
+      </aside>
+    </div>
+    <footer class="page-footer"><span>像素专注花园 <span aria-hidden="true">✿</span> 留一点时间给成长。</span><span>数据保存在当前浏览器，换设备前可导出备份。</span></footer>
+    <div class="storage-notice" id="storage-notice" role="alert" hidden></div>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="wrap">请开启 JavaScript，才能使用任务列表、花园和专注计时。</p></noscript>
+</body>
+</html>
